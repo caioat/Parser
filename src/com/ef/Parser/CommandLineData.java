@@ -34,9 +34,9 @@ public class CommandLineData
 		}
 		catch( ParseException | java.text.ParseException e )
 		{
-		    System.out.println("Input parameters error - " + e.getMessage());
+		    System.out.println(Constants.ERROR_PREFIX + " - " + e.getMessage());
 		    HelpFormatter formatter = new HelpFormatter();
-		    formatter.printHelp( "parser [options]", options );
+		    formatter.printHelp("parser", options);
 		    System.exit(0);
 		}		
 	}
@@ -45,20 +45,23 @@ public class CommandLineData
 	{
 		Options options = new Options();
 		options.addOption(Option.builder().longOpt(Constants.ARGUMENT_STARTDATE)
-										  .desc("Connection start date (format: " + Constants.STARTDATE_FORMAT + ")")
+										  .desc(Constants.ARGUMENT_STARTDATE_DESC)
 										  .hasArg()
+										  .argName("timestamp")
 										  .required()
 										  .build());
 		
 		options.addOption(Option.builder().longOpt(Constants.ARGUMENT_DURATION)
-						                  .desc("Connection duration (" + Constants.DURATION_HOURLY + " or " + Constants.DURATION_DAILY + ")")
+						                  .desc(Constants.ARGUMENT_DURATION_DESC)
 						                  .hasArg()
+						                  .argName("string")
 						                  .required()
 						                  .build());
 		
 		options.addOption(Option.builder().longOpt(Constants.ARGUMENT_THRESHOLD)
-						                  .desc("Number of requests threshold")
+						                  .desc(Constants.ARGUMENT_THRESHOLD_DESC)
 						                  .hasArg()
+						                  .argName("integer")
 						                  .required()
 						                  .build());
 		
@@ -67,35 +70,30 @@ public class CommandLineData
 	
 	private void validateInputArguments(CommandLine parsedCommandline) throws java.text.ParseException, ParseException
 	{
-		if( parsedCommandline.hasOption("startDate")) 
+		if( parsedCommandline.hasOption(Constants.ARGUMENT_STARTDATE)) 
 	    {
-	    	mStartDate = parsedCommandline.getOptionValue("startDate");
+	    	mStartDate = parsedCommandline.getOptionValue(Constants.ARGUMENT_STARTDATE);
 	    	SimpleDateFormat format = new java.text.SimpleDateFormat(Constants.STARTDATE_FORMAT);
 	    	format.parse(mStartDate);
 	    }
 	    
-	    if( parsedCommandline.hasOption("duration"))
+	    if( parsedCommandline.hasOption(Constants.ARGUMENT_DURATION))
 	    {
-	    	mDuration = parsedCommandline.getOptionValue("duration");
+	    	mDuration = parsedCommandline.getOptionValue(Constants.ARGUMENT_DURATION);
 	    	if(!StringUtils.equalsAny(mDuration, Constants.DURATION_HOURLY, Constants.DURATION_DAILY))
 	    	{
-	    		throw new ParseException("Duration parameter invalid: \"" + mDuration + "\"");
+	    		throw new ParseException(Constants.ERROR_INVALID_DURATION + " \"" + mDuration + "\"");
 	    	}
 	    }
 	    
-	    if( parsedCommandline.hasOption("threshold"))
+	    if( parsedCommandline.hasOption(Constants.ARGUMENT_THRESHOLD))
 	    {
-	    	mThreshold = parsedCommandline.getOptionValue("threshold");
+	    	mThreshold = parsedCommandline.getOptionValue(Constants.ARGUMENT_THRESHOLD);
 	    	if(!StringUtils.isNumeric(mThreshold))
 	    	{
-	    		throw new ParseException("Threshold parameter is not an integer: \"" + mThreshold + "\"");
+	    		throw new ParseException(Constants.ERROR_INVALID_THRESHOLD + " \"" + mThreshold + "\"");
 	    	}
 	    }
-	}
-	
-	private void printErrorAndHelp(Exception e)
-	{
-		
 	}
 	
 	public String getStartDate() 

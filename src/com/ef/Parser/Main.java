@@ -2,7 +2,6 @@ package com.ef.Parser;
 
 public class Main 
 {
-
 	public static void main(String[] args) 
 	{
 		CommandLineData inputData = new CommandLineData(args);
