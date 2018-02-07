@@ -11,18 +11,34 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 
+import com.ef.Utils.Constants;
+
 public class CommandLineData 
 {
-	private String mStartDate = "";
-	private String mDuration = "";
-	private String mThreshold = "";
+	private static CommandLineData mSingleton = null;
 	
-	public CommandLineData(String... args)
+	private String mStartDate;
+	private String mDuration;
+	private String mThreshold;
+	
+	private CommandLineData()
 	{
-		parseCommandLine(args);
+		mStartDate = "";
+		mDuration = "";
+		mThreshold = "";
 	}
 	
-	private void parseCommandLine(String... args)
+	public static CommandLineData getInstance()
+	{
+		if(mSingleton == null)
+		{
+			mSingleton = new CommandLineData();
+		}
+		
+		return mSingleton;
+	}
+	
+	public void parseCommandLine(String... args)
 	{
 		CommandLineParser parser = new DefaultParser();
 		Options options = buildOptions();
