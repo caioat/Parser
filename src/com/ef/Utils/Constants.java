@@ -20,6 +20,12 @@ public class Constants
 	public static final String MYSQL_USERNAME = "root";
 	public static final String MYSQL_PASSWORD = "root";
 	
+	public static final int LOG_ARRAY_DATA_POS_TIMESTAMP  = 0;
+	public static final int LOG_ARRAY_DATA_POS_IP         = 1;
+	public static final int LOG_ARRAY_DATA_POS_REQUEST    = 2;
+	public static final int LOG_ARRAY_DATA_POS_STATUS     = 3;
+	public static final int LOG_ARRAY_DATA_POS_USER_AGENT = 4;
+	
 	//Message constants
 	public static final String ARGUMENT_STARTDATE_DESC = "Connection start date (format: " + Constants.STARTDATE_FORMAT + ")";
 	public static final String ARGUMENT_DURATION_DESC = "Connection duration (" + Constants.DURATION_HOURLY + " or " + Constants.DURATION_DAILY + ")";
