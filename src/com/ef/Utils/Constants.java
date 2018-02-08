@@ -13,6 +13,13 @@ public class Constants
 	
 	public static final char LOG_DATA_SEPARATOR = '|';
 	
+	public static final String MYSQL_DRIVER_NAME = "com.mysql.jdbc.Driver";
+	public static final String MYSQL_SERVER_NAME = "localhost";
+	public static final String MYSQL_DATABASE_NAME = "...";
+	public static final String MYSQL_DATABASE_URL = "jdbc:mysql://" + MYSQL_SERVER_NAME + "/" + MYSQL_DATABASE_NAME;
+	public static final String MYSQL_USERNAME = "root";
+	public static final String MYSQL_PASSWORD = "root";
+	
 	//Message constants
 	public static final String ARGUMENT_STARTDATE_DESC = "Connection start date (format: " + Constants.STARTDATE_FORMAT + ")";
 	public static final String ARGUMENT_DURATION_DESC = "Connection duration (" + Constants.DURATION_HOURLY + " or " + Constants.DURATION_DAILY + ")";

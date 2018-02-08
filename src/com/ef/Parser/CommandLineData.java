@@ -15,7 +15,7 @@ import com.ef.Utils.Constants;
 
 public class CommandLineData 
 {
-	private static CommandLineData mSingleton = null;
+	private static CommandLineData mInstance = null;
 	
 	private String mStartDate;
 	private String mDuration;
@@ -30,12 +30,12 @@ public class CommandLineData
 	
 	public static CommandLineData getInstance()
 	{
-		if(mSingleton == null)
+		if(mInstance == null)
 		{
-			mSingleton = new CommandLineData();
+			mInstance = new CommandLineData();
 		}
 		
-		return mSingleton;
+		return mInstance;
 	}
 	
 	public void parseCommandLine(String... args)
@@ -141,6 +141,4 @@ public class CommandLineData
 	{
 		this.mThreshold = threshold;
 	}
-	
-	
 }

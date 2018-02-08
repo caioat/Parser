@@ -8,5 +8,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="external/commons-cli-1.4.jar"/>
 	<classpathentry kind="lib" path="external/commons-lang3-3.7.jar"/>
+	<classpathentry kind="lib" path="external/mysql-connector-java-5.1.45-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

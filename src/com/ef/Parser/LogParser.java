@@ -4,6 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,9 +17,13 @@ import com.ef.Utils.Constants;
 
 public class LogParser
 {
+	Timestamp durationStartDate;
+	Timestamp durationEndDate;
+	int requestsThreshold;
+	
 	public LogParser()
 	{
-		
+		translateInputParameters();
 	}
 	
 	public void execute()
@@ -31,29 +39,38 @@ public class LogParser
 		    {
 		    	splittedLogLine = StringUtils.split(line, Constants.LOG_DATA_SEPARATOR);
 		    	//insert here
-		    			    	
-		    	if(summedLogDataMap.containsKey(splittedLogLine[0]))
-		    	{
-		    		//check timestamp and duration
-		    		//count++ (or not or add to the list)
-		    	}
+		    	
+		    	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	    	    Date parsedDate = dateFormat.parse(splittedLogLine[0]);
+	    	    Timestamp timestamp = new Timestamp(parsedDate.getTime());
+	    	    
+	    	    if(timestamp.compareTo(durationStartDate) >= 0 && timestamp.compareTo(durationEndDate) < 0)
+	    	    {
+	    	    	if(summedLogDataMap.containsKey(splittedLogLine[1]))
+			    	{
+	    	    		summedLogDataMap.replace(splittedLogLine[1], summedLogDataMap.get(splittedLogLine[1]) + 1);
+			    	}
+	    	    	else
+	    	    	{
+	    	    		summedLogDataMap.put(splittedLogLine[1], 1);
+	    	    	}
+	    	    }
 		    }
 		} 
-		catch (FileNotFoundException e) 
+		catch (IOException | ParseException e) 
 		{
-			// TODO Auto-generated catch block
+			System.out.println(e.getMessage());
 			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			finishedSuccessfully = false;
 		}
 		finally
 		{
 			for(String key : summedLogDataMap.keySet()) 
 			{
-			    //insert 2
+				if(summedLogDataMap.get(key) >= requestsThreshold)
+				{
+					//insert 2
+				}
 			}
 			
 			if(finishedSuccessfully)
@@ -63,7 +80,37 @@ public class LogParser
 			else
 			{
 				//rollback
+				System.exit(0);
 			}
+		}
+	}
+	
+	private void translateInputParameters()
+	{
+		try 
+		{
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		    Date parsedDate = dateFormat.parse(CommandLineData.getInstance().getStartDate());
+		    
+		    durationStartDate = new Timestamp(parsedDate.getTime());
+		    durationEndDate = new Timestamp(parsedDate.getTime());
+		    
+		    if(CommandLineData.getInstance().getDuration() == Constants.DURATION_HOURLY)
+		    {
+		    	durationEndDate.setTime(durationEndDate.getTime() + (((60 * 60) + 59)* 1000));
+		    }
+		    else
+		    {
+		    	durationEndDate.setTime(durationEndDate.getTime() + (((1440 * 60) + 59)* 1000));
+		    }
+		    
+		    requestsThreshold = Integer.parseInt(CommandLineData.getInstance().getThreshold());
+		}
+		catch (ParseException e)
+		{
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+			System.exit(0);
 		}
 	}
 }
