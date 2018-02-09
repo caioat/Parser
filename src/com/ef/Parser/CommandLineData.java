@@ -20,12 +20,14 @@ public class CommandLineData
 	private String mStartDate;
 	private String mDuration;
 	private String mThreshold;
+	private String mAccessLog;
 	
 	private CommandLineData()
 	{
 		mStartDate = "";
 		mDuration = "";
 		mThreshold = "";
+		mAccessLog = "";
 	}
 	
 	public static CommandLineData getInstance()
@@ -60,6 +62,13 @@ public class CommandLineData
 	private Options buildOptions()
 	{
 		Options options = new Options();
+		options.addOption(Option.builder().longOpt(Constants.ARGUMENT_ACCESSLOG)
+										  .desc(Constants.ARGUMENT_ACCESSLOG_DESC)
+										  .hasArg()
+										  .argName("string")
+										  .required()
+										  .build());
+		
 		options.addOption(Option.builder().longOpt(Constants.ARGUMENT_STARTDATE)
 										  .desc(Constants.ARGUMENT_STARTDATE_DESC)
 										  .hasArg()
@@ -86,6 +95,11 @@ public class CommandLineData
 	
 	private void validateInputArguments(CommandLine parsedCommandline) throws java.text.ParseException, ParseException
 	{
+		if( parsedCommandline.hasOption(Constants.ARGUMENT_ACCESSLOG)) 
+	    {
+	    	mAccessLog = parsedCommandline.getOptionValue(Constants.ARGUMENT_ACCESSLOG);
+	    }
+		
 		if( parsedCommandline.hasOption(Constants.ARGUMENT_STARTDATE)) 
 	    {
 	    	mStartDate = parsedCommandline.getOptionValue(Constants.ARGUMENT_STARTDATE);
@@ -110,6 +124,16 @@ public class CommandLineData
 	    		throw new ParseException(Constants.ERROR_INVALID_THRESHOLD + " \"" + mThreshold + "\"");
 	    	}
 	    }
+	}
+	
+	public String getAccessLog()
+	{
+		return mAccessLog;
+	}
+
+	public void setAccessLog(String accessLog)
+	{
+		this.mAccessLog = accessLog;
 	}
 	
 	public String getStartDate() 

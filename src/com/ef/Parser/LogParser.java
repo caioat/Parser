@@ -40,25 +40,32 @@ public class LogParser
 		{
 			try
 			{
+				int processedRowsCount = 0;
 				String[] splittedLogLine;
-				logFileBufferedReader = new BufferedReader(new FileReader("access.log"));
+				SimpleDateFormat dateFormat = null;
+				Date parsedDate = null;
+				Timestamp timestamp = null;
 				
+				logFileBufferedReader = new BufferedReader(new FileReader(CommandLineData.getInstance().getAccessLog()));
+				
+				System.out.println("Processing access log file, this can take some time due the filesize");
 			    for(String line; (line = logFileBufferedReader.readLine()) != null && finishedSuccessfully; )
 			    {
 			    	splittedLogLine = StringUtils.split(line, Constants.LOG_DATA_SEPARATOR);
-			    	sqlStatement = "INSERT INTO WEBSERVER_ACCESS_PARSED_LOG VALUES '" + splittedLogLine[Constants.LOG_ARRAY_DATA_POS_IP] +
-										    			                       "', '" + splittedLogLine[Constants.LOG_ARRAY_DATA_POS_TIMESTAMP] + 
-										    			                       "', '" + splittedLogLine[Constants.LOG_ARRAY_DATA_POS_REQUEST] +
-										    			                       "', '" + splittedLogLine[Constants.LOG_ARRAY_DATA_POS_STATUS] +
-										    			                       "', '" + splittedLogLine[Constants.LOG_ARRAY_DATA_POS_USER_AGENT];
+			    	
+			    	dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		    	    parsedDate = dateFormat.parse(splittedLogLine[Constants.LOG_ARRAY_DATA_POS_TIMESTAMP]);
+		    	    timestamp = new Timestamp(parsedDate.getTime());
+		    	    
+			    	sqlStatement = "INSERT INTO WEBSERVER_ACCESS_PARSED_LOG VALUES ('" + splittedLogLine[Constants.LOG_ARRAY_DATA_POS_IP] +
+										    			                        "', '" + timestamp + 
+										    			                        "', '" + splittedLogLine[Constants.LOG_ARRAY_DATA_POS_REQUEST] +
+										    			                        "', '" + Integer.parseInt(splittedLogLine[Constants.LOG_ARRAY_DATA_POS_STATUS]) +
+										    			                        "', '" + splittedLogLine[Constants.LOG_ARRAY_DATA_POS_USER_AGENT] + "')";
 			    	
 			    	finishedSuccessfully = dbManager.executeSqlStatement(sqlStatement);
 			    	if(finishedSuccessfully)
 			    	{
-			    		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-			    	    Date parsedDate = dateFormat.parse(splittedLogLine[Constants.LOG_ARRAY_DATA_POS_TIMESTAMP]);
-			    	    Timestamp timestamp = new Timestamp(parsedDate.getTime());
-			    	    
 			    	    if(timestamp.compareTo(durationStartDate) >= 0 && timestamp.compareTo(durationEndDate) < 0)
 			    	    {
 			    	    	if(summedLogDataMap.containsKey(splittedLogLine[Constants.LOG_ARRAY_DATA_POS_IP]))
@@ -72,7 +79,16 @@ public class LogParser
 			    	    	}
 			    	    }
 			    	}
+			    	
+			    	processedRowsCount++;
+			    	if((processedRowsCount % 10000) == 0)
+			    	{
+			    		System.out.println("Rows processed so far: " + processedRowsCount);
+			    		dbManager.commit();
+			    	}
 			    }
+			    System.out.println("Process finished, total of rows processed: " + processedRowsCount);
+			    dbManager.commit();
 			} 
 			catch (IOException | ParseException e) 
 			{
@@ -94,21 +110,7 @@ public class LogParser
 				
 				if(finishedSuccessfully)
 				{
-					for(String key : summedLogDataMap.keySet()) 
-					{
-						if(summedLogDataMap.get(key) >= requestsThreshold && finishedSuccessfully)
-						{
-							System.out.println(key);
-							
-							sqlStatement = "INSERT INTO WEBSERVER_BLOCKED_IPS VALUES '" + key +
-				                           "', 'Threshold exceeded during timeframe'";
-							finishedSuccessfully = dbManager.executeSqlStatement(sqlStatement);
-						}
-						else
-						{
-							break; 
-						}
-					}
+					finishedSuccessfully = processThresholdExceededEntries(summedLogDataMap);
 				}
 				
 				if(finishedSuccessfully)
@@ -124,24 +126,50 @@ public class LogParser
 			}
 		}
 	}
+
+	private boolean processThresholdExceededEntries(Map<String, Integer> summedLogDataMap)
+	{
+		boolean ret = true;
+		String sqlStatement;
+		
+		System.out.println("-----------------------");
+		System.out.println("Threshold exceeded IPs:");
+		System.out.println("-----------------------");
+		for(String key : summedLogDataMap.keySet()) 
+		{
+			if(summedLogDataMap.get(key) >= requestsThreshold && ret)
+			{
+				System.out.println(key);
+				
+				sqlStatement = "INSERT INTO WEBSERVER_BLOCKED_IPS VALUES ('" + key +
+		                       "', 'Threshold exceeded during timeframe')";
+				ret = dbManager.executeSqlStatement(sqlStatement);
+			}
+			else if(!ret)
+			{
+				break; 
+			}
+		}
+		return ret;
+	}
 	
 	private void translateInputParameters()
 	{
 		try 
 		{
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH:mm:ss");
 		    Date parsedDate = dateFormat.parse(CommandLineData.getInstance().getStartDate());
 		    
 		    durationStartDate = new Timestamp(parsedDate.getTime());
 		    durationEndDate = new Timestamp(parsedDate.getTime());
 		    
-		    if(CommandLineData.getInstance().getDuration() == Constants.DURATION_HOURLY)
+		    if(CommandLineData.getInstance().getDuration().equals(Constants.DURATION_HOURLY))
 		    {
-		    	durationEndDate.setTime(durationEndDate.getTime() + (((60 * 60) + 59)* 1000));
+		    	durationEndDate.setTime(durationEndDate.getTime() + (((59 * 60) + 59) * 1000));
 		    }
 		    else
 		    {
-		    	durationEndDate.setTime(durationEndDate.getTime() + (((1440 * 60) + 59)* 1000));
+		    	durationEndDate.setTime(durationEndDate.getTime() + (((1439 * 60) + 59)* 1000));
 		    }
 		    
 		    requestsThreshold = Integer.parseInt(CommandLineData.getInstance().getThreshold());

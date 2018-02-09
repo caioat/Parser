@@ -3,6 +3,7 @@ package com.ef.Utils;
 public class Constants 
 {
 	//Codewise constants
+	public static final String ARGUMENT_ACCESSLOG = "accesslog";
 	public static final String ARGUMENT_STARTDATE = "startDate";
 	public static final String ARGUMENT_DURATION = "duration";
 	public static final String ARGUMENT_THRESHOLD = "threshold";
@@ -15,7 +16,7 @@ public class Constants
 	
 	public static final String MYSQL_DRIVER_NAME = "com.mysql.jdbc.Driver";
 	public static final String MYSQL_SERVER_NAME = "localhost";
-	public static final String MYSQL_DATABASE_NAME = "...";
+	public static final String MYSQL_DATABASE_NAME = "parser";
 	public static final String MYSQL_DATABASE_URL = "jdbc:mysql://" + MYSQL_SERVER_NAME + "/" + MYSQL_DATABASE_NAME;
 	public static final String MYSQL_USERNAME = "root";
 	public static final String MYSQL_PASSWORD = "root";
@@ -27,8 +28,9 @@ public class Constants
 	public static final int LOG_ARRAY_DATA_POS_USER_AGENT = 4;
 	
 	//Message constants
+	public static final String ARGUMENT_ACCESSLOG_DESC = "Path to file to be parsed";
 	public static final String ARGUMENT_STARTDATE_DESC = "Connection start date (format: " + Constants.STARTDATE_FORMAT + ")";
-	public static final String ARGUMENT_DURATION_DESC = "Connection duration (" + Constants.DURATION_HOURLY + " or " + Constants.DURATION_DAILY + ")";
+	public static final String ARGUMENT_DURATION_DESC  = "Connection duration (" + Constants.DURATION_HOURLY + " or " + Constants.DURATION_DAILY + ")";
 	public static final String ARGUMENT_THRESHOLD_DESC = "Requests threshold";
 	
 	public static final String ERROR_PREFIX = "Input parameters error"; 
