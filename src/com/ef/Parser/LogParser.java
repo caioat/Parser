@@ -84,11 +84,9 @@ public class LogParser
 			    	if((processedRowsCount % 10000) == 0)
 			    	{
 			    		System.out.println("Rows processed so far: " + processedRowsCount);
-			    		dbManager.commit();
 			    	}
 			    }
 			    System.out.println("Process finished, total of rows processed: " + processedRowsCount);
-			    dbManager.commit();
 			} 
 			catch (IOException | ParseException e) 
 			{
