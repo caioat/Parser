@@ -137,7 +137,7 @@ public class LogParser
 				System.out.println(key);
 				
 				sqlStatement = "INSERT INTO WEBSERVER_BLOCKED_IPS VALUES ('" + key +
-		                       "', 'Threshold value " + requestsThreshold + " exceeded during timeframe [" + durationStartDate.toString() + " - " + durationEndDate.toString() + "')";
+		                       "', 'Threshold value " + requestsThreshold + " exceeded during timeframe [" + durationStartDate.toString() + " - " + durationEndDate.toString() + "]')";
 				ret = dbManager.executeSqlStatement(sqlStatement);
 			}
 			else if(!ret)
