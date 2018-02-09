@@ -1,6 +1,6 @@
-package com.ef.Parser;
+package com.ef;
 
-public class Main 
+public class Parser 
 {
 	public static void main(String[] args) 
 	{

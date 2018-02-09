@@ -1,4 +1,4 @@
-package com.ef.Utils;
+package com.ef;
 
 public class Constants 
 {

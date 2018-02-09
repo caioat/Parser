@@ -1,4 +1,4 @@
-package com.ef.Parser;
+package com.ef;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -11,9 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-
-import com.ef.Utils.Constants;
-import com.ef.Utils.DatabaseManager;
 
 public class LogParser
 {
@@ -140,7 +137,7 @@ public class LogParser
 				System.out.println(key);
 				
 				sqlStatement = "INSERT INTO WEBSERVER_BLOCKED_IPS VALUES ('" + key +
-		                       "', 'Threshold exceeded during timeframe')";
+		                       "', 'Threshold value " + requestsThreshold + " exceeded during timeframe [" + durationStartDate.toString() + " - " + durationEndDate.toString() + "')";
 				ret = dbManager.executeSqlStatement(sqlStatement);
 			}
 			else if(!ret)

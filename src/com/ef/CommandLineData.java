@@ -1,4 +1,4 @@
-package com.ef.Parser;
+package com.ef;
 
 import java.text.SimpleDateFormat;
 
@@ -10,8 +10,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
-
-import com.ef.Utils.Constants;
 
 public class CommandLineData 
 {
